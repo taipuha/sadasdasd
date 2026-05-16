@@ -1,16 +1,197 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FALLS RP — Загрузка</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+<meta charset="UTF-8">
+<title>FALLS RP — Загрузка</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Arial Black', Arial, sans-serif; }
+
     body {
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-      color: #fff;
-      background: #000 url('https://i.postimg.cc/RhtZsxyF/1778915162729-019e2f9a-4245-7fe4-b2ec-bec5055bb788-(1).png') center center / cover no-repeat;
-      position: relative;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        color: white;
+        background: #000 url('ВСТАВЬ_СЮДА_ССЫЛКУ_НА_КАРТИНКУ') center center / cover no-repeat;
     }
+
+    .overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.35);
+    }
+
+    .container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 40px 50px;
+        z-index: 2;
+    }
+
+    .panel {
+        width: 32%;
+        background: rgba(0, 0, 0, 0.78);
+        border: 2px solid #ff7a1a;
+        border-radius: 18px;
+        padding: 25px;
+        box-shadow: 0 0 25px rgba(255, 122, 26, 0.35);
+        position: relative;
+    }
+
+    .logo {
+        position: absolute;
+        top: -45px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #111;
+        border: 2px solid #ff7a1a;
+        border-radius: 12px;
+        padding: 8px 22px;
+        font-size: 26px;
+        letter-spacing: 2px;
+        color: white;
+        text-shadow: 0 0 10px #ff7a1a;
+    }
+
+    .logo span { color: #ff7a1a; }
+
+    .panel-text {
+        margin-top: 30px;
+        font-size: 17px;
+        line-height: 1.7;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .orange { color: #ff7a1a; }
+
+    .qr {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .qr img {
+        width: 180px;
+        height: 180px;
+        background: white;
+        padding: 8px;
+        border-radius: 10px;
+    }
+
+    .qr p {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #ff7a1a;
+    }
+
+    /* Нижняя полоса загрузки */
+    .bottom {
+        position: absolute;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        text-align: center;
+        z-index: 3;
+    }
+
+    .progress {
+        width: 100%;
+        height: 20px;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid #ff7a1a;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .bar {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #ff7a1a, #ff3c00);
+        transition: 0.3s;
+    }
+
+    .status {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #fff;
+        text-transform: uppercase;
+    }
+</style>
+</head>
+<body>
+
+<div class="overlay"></div>
+
+<div class="container">
+
+    <!-- ЛЕВАЯ ПАНЕЛЬ -->
+    <div class="panel">
+        <div class="logo">FALLS <span>RP</span></div>
+        <div class="panel-text">
+            Мы начинающая команда,<br>
+            создающая <span class="orange">ДАРК РП</span> сервер<br>
+            под названием <span class="orange">FALLS RP</span>.<br><br>
+            Если хотите предложить<br>
+            улучшение для сервера —<br>
+            заходите в <span class="orange">ДИСКОРД</span>:
+        </div>
+
+        <div class="qr">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://discord.gg/p7vmxtFE" alt="QR">
+            <p>СКАНИРУЙ QR-КОД</p>
+            <p style="color:white;">https://discord.gg/p7vmxtFE</p>
+        </div>
+    </div>
+
+    <!-- ПРАВАЯ ПАНЕЛЬ -->
+    <div class="panel">
+        <div class="logo">FALLS <span>RP</span></div>
+        <div class="panel-text">
+            На сервере присутствуют <span class="orange">БАГИ</span>,<br>
+            при нахождении багов писать<br>
+            <span class="orange">TAIPUNA</span> в <span class="orange">DISCORD</span>.<br><br>
+            При отправке лучше прислать<br>
+            <span class="orange">текстовое объяснение</span><br>
+            или <span class="orange">видео</span> с багом.
+        </div>
+    </div>
+
+</div>
+
+<!-- Полоса загрузки внизу -->
+<div class="bottom">
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="status" id="status">Загрузка сервера...</div>
+</div>
+
+<script>
+    let filesNeeded = 0;
+    let filesTotal = 0;
+
+    function update() {
+        let loaded = Math.max(filesTotal - filesNeeded, 0);
+        let percent = filesTotal > 0 ? Math.floor((loaded / filesTotal) * 100) : 0;
+        document.getElementById("bar").style.width = percent + "%";
+    }
+
+    function GameDetails(servername, serverurl, mapname) {
+        document.getElementById("status").textContent = "Карта: " + (mapname || "загрузка...");
+    }
+    function SetStatusChanged(status) {
+        document.getElementById("status").textContent = status || "Загрузка...";
+    }
+    function DownloadingFile(name) {
+        document.getElementById("status").textContent = "Загрузка файла: " + name;
+    }
+    function SetFilesNeeded(n) { filesNeeded = parseInt(n)||0; update(); }
+    function SetFilesTotal(n)  { filesTotal  = parseInt(n)||0; update(); }
+</script>
+
+</body>
+</html>
